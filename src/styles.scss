@@ -1,0 +1,109 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Ionic Core Framework styles */
+@import "@ionic/angular/css/core.css";
+@import "@ionic/angular/css/normalize.css";
+@import "@ionic/angular/css/structure.css";
+@import "@ionic/angular/css/typography.css";
+@import "@ionic/angular/css/display.css";
+@import "@ionic/angular/css/padding.css";
+@import "@ionic/angular/css/float-elements.css";
+@import "@ionic/angular/css/text-alignment.css";
+@import "@ionic/angular/css/text-transformation.css";
+@import "@ionic/angular/css/flex-utils.css";
+
+:root {
+  --ion-font-family: 'Outfit', 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --ion-color-primary: #E55B13;
+  --ion-color-primary-rgb: 229, 91, 19;
+  --ion-color-primary-contrast: #ffffff;
+  --ion-color-primary-shade: #c54a0d;
+  --ion-color-primary-tint: #e86b2b;
+  --ion-background-color: #FFF9F2;
+
+  --brand-primary: #E55B13;
+  --brand-dark: #703310;
+  --brand-accent: #F9A03F;
+  --brand-bg: #FFF9F2;
+
+  --ion-safe-area-top: env(safe-area-inset-top, 0px);
+  --ion-safe-area-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+body {
+  font-family: 'Outfit', sans-serif;
+  background-color: #FFF9F2;
+  color: #3D2314;
+}
+
+/* Safe Area Utility Classes for Notch / Gesture Bar on Android & iOS */
+.header-safe-top {
+  padding-top: max(1rem, calc(0.75rem + env(safe-area-inset-top, 0px)));
+}
+
+.nav-safe-bottom {
+  padding-bottom: max(0.75rem, calc(0.5rem + env(safe-area-inset-bottom, 0px)));
+}
+
+.cta-safe-bottom {
+  padding-bottom: max(1rem, calc(0.75rem + env(safe-area-inset-bottom, 0px)));
+}
+
+/* Custom Utilities */
+.flex-center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.flex-between {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.glass-nav {
+  background: rgba(255, 255, 255, 0.92);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+}
+
+.glass-card {
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(254, 215, 170, 0.5);
+}
+
+.orange-gradient-bg {
+  background: linear-gradient(135deg, #E55B13 0%, #F9A03F 100%);
+}
+
+.orange-hero-gradient {
+  background: linear-gradient(135deg, #703310 0%, #E55B13 60%, #F9A03F 100%);
+}
+
+.orange-badge {
+  background-color: #ffedd5;
+  color: #c54a0d;
+  font-weight: 700;
+}
+
+/* Hide scrollbar */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+/* Custom Toast Styling */
+.custom-customer-toast {
+  --background: #703310;
+  --color: #ffffff;
+  --button-color: #F9A03F;
+  font-family: 'Outfit', sans-serif;
+  border-radius: 16px;
+}

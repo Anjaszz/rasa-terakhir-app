@@ -1,0 +1,56 @@
+<ion-app>
+  <div class="flex flex-col min-h-screen bg-[#FFF9F2] font-['Outfit',sans-serif]">
+    <!-- Main Content Outlet -->
+    <main class="flex-1 pb-[calc(5.5rem+env(safe-area-inset-bottom,0px))]">
+      <ion-router-outlet></ion-router-outlet>
+    </main>
+
+    <!-- Floating Bottom Navigation Bar -->
+    <nav class="fixed bottom-0 left-0 right-0 z-40 bg-white/95 backdrop-blur-md border-t border-amber-200/70 px-4 pt-2.5 nav-safe-bottom shadow-lg shadow-orange-950/10">
+      <div class="max-w-md mx-auto flex items-center justify-around">
+        <!-- Menu -->
+        <a 
+          routerLink="/menu" 
+          class="flex flex-col items-center gap-1 py-1 px-3.5 rounded-2xl transition-all duration-200"
+          [ngClass]="isCurrentRoute('/menu') ? 'text-orange-600 font-bold scale-105' : 'text-stone-400 hover:text-orange-500 font-medium'">
+          <ion-icon [name]="isCurrentRoute('/menu') ? 'restaurant' : 'restaurant-outline'" class="text-2xl transition-transform"></ion-icon>
+          <span class="text-[11px] tracking-tight">Menu</span>
+        </a>
+
+        <!-- Keranjang (Cart) -->
+        <a 
+          routerLink="/cart" 
+          class="relative flex flex-col items-center gap-1 py-1 px-3.5 rounded-2xl transition-all duration-200"
+          [ngClass]="isCurrentRoute('/cart') ? 'text-orange-600 font-bold scale-105' : 'text-stone-400 hover:text-orange-500 font-medium'">
+          <div class="relative">
+            <ion-icon [name]="isCurrentRoute('/cart') ? 'cart' : 'cart-outline'" class="text-2xl transition-transform"></ion-icon>
+            <span 
+              *ngIf="(orderService.cartItems$ | async)?.length" 
+              class="absolute -top-1.5 -right-2.5 bg-orange-600 text-white text-[10px] font-extrabold w-4 h-4 rounded-full flex-center animate-bounce shadow-md shadow-orange-600/40">
+              {{ orderService.cartCount }}
+            </span>
+          </div>
+          <span class="text-[11px] tracking-tight">Keranjang</span>
+        </a>
+
+        <!-- Riwayat (History) -->
+        <a 
+          routerLink="/history" 
+          class="flex flex-col items-center gap-1 py-1 px-3.5 rounded-2xl transition-all duration-200"
+          [ngClass]="isCurrentRoute('/history') || isCurrentRoute('/order-status') ? 'text-orange-600 font-bold scale-105' : 'text-stone-400 hover:text-orange-500 font-medium'">
+          <ion-icon [name]="isCurrentRoute('/history') || isCurrentRoute('/order-status') ? 'receipt' : 'receipt-outline'" class="text-2xl transition-transform"></ion-icon>
+          <span class="text-[11px] tracking-tight">Pesanan</span>
+        </a>
+
+        <!-- Profil (Profile / Auth) -->
+        <a 
+          routerLink="/profile" 
+          class="flex flex-col items-center gap-1 py-1 px-3.5 rounded-2xl transition-all duration-200"
+          [ngClass]="isCurrentRoute('/profile') ? 'text-orange-600 font-bold scale-105' : 'text-stone-400 hover:text-orange-500 font-medium'">
+          <ion-icon [name]="isCurrentRoute('/profile') ? 'person' : 'person-outline'" class="text-2xl transition-transform"></ion-icon>
+          <span class="text-[11px] tracking-tight">Profil</span>
+        </a>
+      </div>
+    </nav>
+  </div>
+</ion-app>

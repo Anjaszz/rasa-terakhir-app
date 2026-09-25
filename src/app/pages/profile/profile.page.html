@@ -1,0 +1,180 @@
+<ion-header class="ion-no-border">
+  <div class="bg-white/95 backdrop-blur-md border-b border-amber-200/60 px-4 header-safe-top pb-4 font-['Outfit',sans-serif]">
+    <h1 class="text-base font-extrabold text-stone-900 leading-tight">Akun &amp; Profil</h1>
+    <p class="text-[10px] text-orange-600 font-extrabold uppercase tracking-wider">
+      {{ authService.isLoggedIn ? 'Member Terdaftar • Rasa Terakhir' : 'Mode Tamu (Guest)' }}
+    </p>
+  </div>
+</ion-header>
+
+<ion-content class="bg-[#FFF9F2]">
+  <div class="p-4 space-y-4 pb-28 max-w-md mx-auto font-['Outfit',sans-serif]">
+    
+    <!-- 1. Logged In Profile Card -->
+    <div *ngIf="authService.isLoggedIn && authService.currentUser as user" class="space-y-4">
+      <div class="bg-white rounded-3xl p-6 border border-amber-200/60 shadow-sm text-center space-y-3 relative overflow-hidden">
+        
+        <!-- Member Card Badge -->
+        <div class="rounded-2xl p-4 bg-gradient-to-r from-[#703310] via-[#E55B13] to-[#F9A03F] text-white shadow-md text-left relative overflow-hidden">
+          <div class="flex items-center justify-between">
+            <span class="text-[9px] font-black uppercase tracking-widest text-amber-200">Kartu Member Pelanggan</span>
+            <img src="assets/logo-rasaterakhir.png" alt="Rasa Terakhir" class="h-6 w-auto object-contain brightness-200">
+          </div>
+          <div class="mt-4">
+            <h2 class="text-lg font-black text-white leading-tight">{{ user.name }}</h2>
+            <p class="text-xs font-mono text-amber-100 mt-0.5">{{ user.whatsapp }}</p>
+          </div>
+        </div>
+
+        <div class="pt-2 space-y-2 text-left text-xs">
+          <div class="flex items-center justify-between p-3 bg-amber-50/60 rounded-xl border border-amber-200/40">
+            <div class="flex items-center gap-2 text-stone-500">
+              <ion-icon name="logo-whatsapp" class="text-emerald-600 text-sm"></ion-icon>
+              <span>WhatsApp:</span>
+            </div>
+            <span class="font-mono font-bold text-stone-800">{{ user.whatsapp }}</span>
+          </div>
+
+          <div *ngIf="user.email" class="flex items-center justify-between p-3 bg-amber-50/60 rounded-xl border border-amber-200/40">
+            <div class="flex items-center gap-2 text-stone-500">
+              <ion-icon name="mail-outline" class="text-orange-500 text-sm"></ion-icon>
+              <span>Email:</span>
+            </div>
+            <span class="font-bold text-stone-800 truncate">{{ user.email }}</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Cloud Sync Guarantee -->
+      <div class="p-4 bg-emerald-50 border border-emerald-200/80 rounded-2xl flex items-start gap-3 shadow-sm">
+        <ion-icon name="checkmark-circle" class="text-emerald-600 text-xl flex-shrink-0 mt-0.5"></ion-icon>
+        <div class="text-xs text-emerald-950">
+          <p class="font-extrabold">Riwayat Pesanan Tersinkron ke Cloud</p>
+          <p class="text-[11px] text-emerald-800 mt-0.5 leading-snug">Semua transaksi Anda tercatat aman di database Rasa Terakhir dan dapat diakses kapan saja.</p>
+        </div>
+      </div>
+
+      <!-- Logout Button -->
+      <button 
+        (click)="logout()" 
+        class="w-full py-3.5 bg-rose-50 hover:bg-rose-100 text-rose-600 font-extrabold text-xs rounded-2xl border border-rose-200/60 flex-center gap-2 transition-all">
+        <ion-icon name="log-out-outline" class="text-base"></ion-icon>
+        <span>Keluar dari Akun</span>
+      </button>
+    </div>
+
+    <!-- 2. Auth Form (Login / Register) when NOT logged in -->
+    <div *ngIf="!authService.isLoggedIn" class="space-y-4">
+      
+      <!-- Welcome Header -->
+      <div class="text-center py-3 space-y-1">
+        <div class="w-14 h-14 bg-orange-100/70 text-orange-600 rounded-2xl flex-center mx-auto mb-2 border border-orange-200/60 shadow-sm">
+          <ion-icon name="sparkles" class="text-2xl"></ion-icon>
+        </div>
+        <h2 class="font-black text-stone-900 text-base">
+          {{ isRegisterMode ? 'Daftar Akun Pelanggan' : 'Masuk ke Akun Pelanggan' }}
+        </h2>
+        <p class="text-xs text-stone-500">
+          {{ isRegisterMode ? 'Daftar untuk menyimpan riwayat pesanan ke cloud Rasa Terakhir' : 'Masuk dengan nomor WhatsApp terdaftar' }}
+        </p>
+      </div>
+
+      <!-- Form Box -->
+      <div class="bg-white rounded-3xl p-5 border border-amber-200/60 shadow-sm space-y-3">
+        
+        <!-- Name (Register only) -->
+        <div *ngIf="isRegisterMode">
+          <label class="block text-[10px] font-bold text-stone-700 uppercase tracking-wider mb-1">Nama Lengkap</label>
+          <div class="relative">
+            <ion-icon name="person-outline" class="absolute left-3 top-1/2 -translate-y-1/2 text-stone-400 text-sm"></ion-icon>
+            <input 
+              type="text" 
+              [(ngModel)]="name" 
+              placeholder="Masukkan nama Anda"
+              class="w-full text-xs py-2.5 pl-9 pr-3 bg-amber-50/50 border border-amber-200/80 rounded-xl focus:outline-none focus:border-orange-500 focus:bg-white">
+          </div>
+        </div>
+
+        <!-- WhatsApp -->
+        <div>
+          <label class="block text-[10px] font-bold text-stone-700 uppercase tracking-wider mb-1">Nomor WhatsApp</label>
+          <div class="relative">
+            <ion-icon name="logo-whatsapp" class="absolute left-3 top-1/2 -translate-y-1/2 text-emerald-600 text-sm"></ion-icon>
+            <input 
+              type="tel" 
+              [(ngModel)]="whatsapp" 
+              placeholder="Contoh: 081234567890"
+              class="w-full text-xs py-2.5 pl-9 pr-3 bg-amber-50/50 border border-amber-200/80 rounded-xl focus:outline-none focus:border-orange-500 focus:bg-white">
+          </div>
+        </div>
+
+        <!-- Email (Register only) -->
+        <div *ngIf="isRegisterMode">
+          <label class="block text-[10px] font-bold text-stone-700 uppercase tracking-wider mb-1">Email <span class="text-stone-400 font-normal">(Opsional)</span></label>
+          <div class="relative">
+            <ion-icon name="mail-outline" class="absolute left-3 top-1/2 -translate-y-1/2 text-stone-400 text-sm"></ion-icon>
+            <input 
+              type="email" 
+              [(ngModel)]="email" 
+              placeholder="nama@email.com"
+              class="w-full text-xs py-2.5 pl-9 pr-3 bg-amber-50/50 border border-amber-200/80 rounded-xl focus:outline-none focus:border-orange-500 focus:bg-white">
+          </div>
+        </div>
+
+        <!-- Password -->
+        <div>
+          <label class="block text-[10px] font-bold text-stone-700 uppercase tracking-wider mb-1">Password</label>
+          <div class="relative">
+            <ion-icon name="lock-closed-outline" class="absolute left-3 top-1/2 -translate-y-1/2 text-stone-400 text-sm"></ion-icon>
+            <input 
+              [type]="showPassword ? 'text' : 'password'" 
+              [(ngModel)]="password" 
+              placeholder="Minimal 6 karakter"
+              class="w-full text-xs py-2.5 pl-9 pr-9 bg-amber-50/50 border border-amber-200/80 rounded-xl focus:outline-none focus:border-orange-500 focus:bg-white">
+            <button 
+              type="button" 
+              (click)="showPassword = !showPassword" 
+              class="absolute right-3 top-1/2 -translate-y-1/2 text-stone-400 text-sm">
+              <ion-icon [name]="showPassword ? 'eye-off-outline' : 'eye-outline'"></ion-icon>
+            </button>
+          </div>
+        </div>
+
+        <!-- Alerts -->
+        <div *ngIf="errorMessage" class="p-3 bg-rose-50 border border-rose-200 rounded-xl text-rose-700 text-xs font-bold">
+          ⚠️ {{ errorMessage }}
+        </div>
+        <div *ngIf="successMessage" class="p-3 bg-emerald-50 border border-emerald-200 rounded-xl text-emerald-700 text-xs font-bold">
+          ✅ {{ successMessage }}
+        </div>
+
+        <!-- Submit Button -->
+        <button 
+          (click)="doAuth()" 
+          [disabled]="isLoading"
+          class="w-full py-3.5 bg-gradient-to-r from-orange-600 to-amber-600 hover:from-orange-700 hover:to-amber-700 text-white font-extrabold text-xs rounded-2xl shadow-lg shadow-orange-600/30 transition-all flex-center gap-2">
+          <span *ngIf="!isLoading">{{ isRegisterMode ? 'Daftar Sekarang' : 'Masuk' }}</span>
+          <span *ngIf="isLoading" class="animate-pulse">Memproses...</span>
+        </button>
+
+        <!-- Toggle Mode -->
+        <div class="text-center pt-2">
+          <button 
+            type="button" 
+            (click)="toggleMode()" 
+            class="text-xs text-orange-600 font-bold hover:underline">
+            {{ isRegisterMode ? 'Sudah punya akun? Masuk di sini' : 'Belum punya akun? Daftar di sini' }}
+          </button>
+        </div>
+      </div>
+
+      <!-- Guest Ordering Option Notice -->
+      <div class="text-center pt-2">
+        <a routerLink="/menu" class="text-xs text-stone-500 hover:text-orange-600 font-medium">
+          ← Tetap pesan sebagai Tamu tanpa akun
+        </a>
+      </div>
+    </div>
+
+  </div>
+</ion-content>

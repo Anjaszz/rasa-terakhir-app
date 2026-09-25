@@ -1,0 +1,206 @@
+<ion-header class="ion-no-border">
+  <div class="bg-white/95 backdrop-blur-md border-b border-amber-200/60 px-4 header-safe-top pb-3 flex items-center justify-between shadow-sm font-['Outfit',sans-serif]">
+    <div class="flex items-center gap-3">
+      <a routerLink="/menu" class="w-9 h-9 rounded-2xl bg-amber-50 border border-amber-200/60 text-orange-600 flex-center active:scale-95 transition-all">
+        <ion-icon name="arrow-back" class="text-base font-bold"></ion-icon>
+      </a>
+      <div>
+        <h1 class="text-sm font-extrabold text-stone-900 leading-tight">Status &amp; Struk Pesanan</h1>
+        <p class="text-[10px] text-stone-400 font-medium">Rasa Terakhir Cikande</p>
+      </div>
+    </div>
+  </div>
+</ion-header>
+
+<ion-content class="bg-[#FFF9F2]">
+  <div class="p-4 space-y-4 pb-28 max-w-md mx-auto font-['Outfit',sans-serif]">
+    
+    <!-- Loading -->
+    <div *ngIf="isLoading" class="text-center py-20 animate-pulse text-stone-400 text-xs">
+      Memuat status pesanan...
+    </div>
+
+    <div *ngIf="!isLoading && order" class="space-y-4 animate-in fade-in duration-300">
+      
+      <!-- Queue Card Status -->
+      <div class="text-white rounded-3xl p-6 text-center shadow-xl space-y-3 relative overflow-hidden"
+        [ngClass]="order.status === 'unpaid' ? 'bg-gradient-to-br from-rose-700 via-orange-600 to-amber-700 shadow-orange-950/20' : 'bg-gradient-to-br from-[#703310] via-[#E55B13] to-[#F9A03F] shadow-orange-950/20'">
+        <div class="absolute -right-6 -bottom-6 w-32 h-32 bg-white/10 rounded-full blur-2xl pointer-events-none"></div>
+        
+        <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-wider backdrop-blur-md shadow-sm"
+          [ngClass]="{
+            'bg-rose-500 text-white animate-pulse border border-rose-300': order.status === 'unpaid',
+            'bg-amber-400 text-amber-950': order.status === 'pending' || order.status === 'processing',
+            'bg-amber-300 text-stone-950 animate-bounce font-extrabold': order.status === 'ready',
+            'bg-emerald-400 text-emerald-950': order.status === 'completed',
+            'bg-rose-400 text-rose-950': order.status === 'cancelled'
+          }">
+          <ion-icon [name]="order.status === 'unpaid' ? 'card-outline' : (order.status === 'pending' || order.status === 'processing') ? 'restaurant-outline' : order.status === 'ready' ? 'bag-handle-outline' : order.status === 'completed' ? 'checkmark-circle' : 'close-circle'"></ion-icon>
+          <span>
+            {{ order.status === 'unpaid' ? '💳 Menunggu Pembayaran' :
+               (order.status === 'pending' || order.status === 'processing') ? '👨‍🍳 Sedang Diproses' : 
+               order.status === 'ready' ? '🛍️ Pesanan Siap Diambil!' : 
+               order.status === 'completed' ? '✅ Pesanan Selesai' : '❌ Pesanan Dibatalkan' }}
+          </span>
+        </div>
+
+        <div>
+          <p class="text-[11px] font-bold text-amber-100 uppercase tracking-widest">Nomor Antrean Anda</p>
+          <p class="text-5xl font-black tracking-tight mt-1 text-white drop-shadow-sm">#{{ order.queueNumber }}</p>
+        </div>
+
+        <div class="pt-2 border-t border-white/20 flex items-center justify-center gap-4 text-[11px] text-amber-100 font-medium">
+          <span>Kode: <strong class="font-mono text-white">{{ order.trxCode }}</strong></span>
+          <span>•</span>
+          <span>{{ order.orderType === 'delivery' ? 'Delivery (Pesan Antar)' : 'Pick Up (Ambil di Outlet)' }}</span>
+        </div>
+      </div>
+
+      <!-- Unpaid Alert Banner -->
+      <div *ngIf="order.status === 'unpaid'" class="bg-orange-50 border-2 border-orange-200/80 rounded-2xl p-4 flex items-start gap-3 text-xs text-orange-950 shadow-sm animate-in fade-in">
+        <div class="w-8 h-8 rounded-xl bg-orange-600 text-white flex-center flex-shrink-0 shadow-sm">
+          <ion-icon name="card-outline" class="text-lg"></ion-icon>
+        </div>
+        <div class="flex-1 space-y-1">
+          <p class="font-extrabold text-orange-950">Pesanan Belum Dibayar</p>
+          <p class="text-[11px] leading-relaxed text-orange-800">
+            Silakan selesaikan pembayaran via Midtrans agar pesanan segera disiapkan oleh dapur Rasa Terakhir.
+          </p>
+        </div>
+      </div>
+
+      <!-- Digital Receipt Card -->
+      <div class="bg-white rounded-2xl p-5 border border-amber-200/60 shadow-sm space-y-4">
+        <div class="flex items-center justify-between pb-3 border-b border-dashed border-amber-200">
+          <div>
+            <h3 class="font-extrabold text-stone-900 text-sm">Struk Pesanan</h3>
+            <p class="text-[10px] text-stone-400">{{ order.date | date:'dd MMM yyyy, HH:mm' }}</p>
+          </div>
+          <span class="text-[10px] font-black uppercase px-2.5 py-0.5 rounded-full"
+            [ngClass]="order.isGuest ? 'bg-amber-100 text-amber-800' : 'bg-emerald-100 text-emerald-800'">
+            {{ order.isGuest ? 'Tamu' : 'Member' }}
+          </span>
+        </div>
+
+        <!-- Customer info -->
+        <div class="text-xs space-y-1.5 text-stone-600 pb-3 border-b border-amber-100">
+          <div class="flex justify-between">
+            <span class="text-stone-400">Nama:</span>
+            <span class="font-bold text-stone-800">{{ order.customerName }}</span>
+          </div>
+          <div class="flex justify-between">
+            <span class="text-stone-400">WhatsApp:</span>
+            <span class="font-mono text-stone-800">{{ order.customerPhone }}</span>
+          </div>
+          <div class="flex justify-between">
+            <span class="text-stone-400">Metode Bayar:</span>
+            <span class="font-bold text-stone-800 uppercase">{{ order.paymentMethod === 'midtrans' ? 'Online (Midtrans)' : (order.paymentMethod === 'cash' ? 'Bayar di Kasir' : order.paymentMethod) }}</span>
+          </div>
+        </div>
+
+        <!-- Items list -->
+        <div class="space-y-3">
+          <div *ngFor="let item of order.items" class="flex justify-between items-start text-xs">
+            <div class="flex-1 pr-2">
+              <p class="font-bold text-stone-800">{{ item.productName || item.name }} x {{ item.qty }}</p>
+              <p *ngIf="item.variantName" class="text-[10px] text-orange-600 font-bold">{{ item.variantName }}</p>
+              <div *ngIf="item.selectedToppings?.length" class="flex flex-wrap gap-1 mt-0.5">
+                <span *ngFor="let t of item.selectedToppings" class="text-[8px] bg-amber-100/80 text-amber-900 px-1.5 py-0.5 rounded font-bold">
+                  + {{ t.name || t }}
+                </span>
+              </div>
+              <div *ngIf="item.notes" class="mt-1">
+                <span class="text-[10px] text-orange-950 bg-orange-50 border border-orange-200/80 px-2 py-0.5 rounded-lg inline-flex items-center gap-1 font-bold">
+                  <span>💬 Catatan:</span>
+                  <span class="italic font-normal text-stone-700">{{ item.notes }}</span>
+                </span>
+              </div>
+            </div>
+            <span class="font-bold text-stone-800">{{ formatRupiah(item.subtotal) }}</span>
+          </div>
+        </div>
+
+        <!-- Total -->
+        <div class="pt-3 border-t border-dashed border-amber-200 flex justify-between items-center text-sm">
+          <span class="font-extrabold text-stone-800">Total Tagihan</span>
+          <span class="font-black text-orange-600 text-base">{{ formatRupiah(order.total) }}</span>
+        </div>
+      </div>
+
+      <!-- Action Buttons Area -->
+      <div class="space-y-2.5">
+        <!-- Error banner for payment retry -->
+        <div *ngIf="paymentErrorMessage" class="p-3 bg-rose-50 border border-rose-200 rounded-xl text-xs text-rose-700 font-medium">
+          {{ paymentErrorMessage }}
+        </div>
+
+        <!-- Button Bayar Sekarang (If Unpaid) -->
+        <button 
+          *ngIf="order.status === 'unpaid'"
+          (click)="payNow()" 
+          [disabled]="isPaying"
+          class="w-full py-4 bg-gradient-to-r from-orange-600 to-amber-600 hover:from-orange-700 hover:to-amber-700 active:scale-98 text-white font-black text-sm rounded-2xl shadow-xl shadow-orange-600/30 transition-all flex items-center justify-center gap-2">
+          <ion-icon [name]="isPaying ? 'refresh' : 'card-outline'" class="text-xl" [ngClass]="{'animate-spin': isPaying}"></ion-icon>
+          <span>{{ isPaying ? 'Membuka Midtrans...' : '💳 Bayar Sekarang (Midtrans)' }}</span>
+        </button>
+
+        <!-- Button Batalkan Pesanan (If Unpaid) -->
+        <button 
+          *ngIf="order.status === 'unpaid'"
+          (click)="cancelOrder()" 
+          class="w-full py-2.5 bg-rose-50 hover:bg-rose-100 text-rose-600 font-bold text-xs rounded-xl transition-all flex items-center justify-center gap-1.5 border border-rose-200/60">
+          <ion-icon name="close-circle" class="text-sm"></ion-icon>
+          <span>Batalkan Pesanan Ini</span>
+        </button>
+
+        <!-- Button Selesaikan Pesanan (If Ready) -->
+        <button 
+          *ngIf="order.status === 'ready'"
+          (click)="completeOrder()" 
+          class="w-full py-3.5 bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold text-xs rounded-2xl shadow-lg shadow-emerald-500/20 transition-all flex items-center justify-center gap-2">
+          <ion-icon name="checkmark-circle" class="text-base"></ion-icon>
+          <span>Selesaikan Pesanan (Sudah Diterima)</span>
+        </button>
+
+        <!-- Button Tanya Pesanan via WhatsApp ke Admin -->
+        <button 
+          (click)="contactAdminWhatsApp()" 
+          class="w-full py-3.5 bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold text-xs rounded-2xl shadow-lg shadow-emerald-600/20 transition-all flex items-center justify-center gap-2 active:scale-98">
+          <ion-icon name="logo-whatsapp" class="text-lg"></ion-icon>
+          <span>Tanya Pesanan via WhatsApp Admin</span>
+        </button>
+
+        <!-- Action Button: Kembali ke Menu -->
+        <a routerLink="/menu" class="block w-full text-center py-3 bg-amber-100/70 hover:bg-amber-200/80 font-bold text-xs text-stone-700 rounded-2xl transition-all border border-amber-200/60">
+          Kembali ke Halaman Menu
+        </a>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Fullscreen Loading Overlay during Midtrans Initialization -->
+  <div *ngIf="isPaying" class="fixed inset-0 bg-stone-950/80 backdrop-blur-md z-50 flex flex-col items-center justify-center p-6 text-center select-none animate-in fade-in duration-200 font-['Outfit',sans-serif]">
+    <div class="bg-white rounded-3xl p-6 shadow-2xl max-w-xs w-full flex flex-col items-center space-y-4 border border-amber-100">
+      
+      <div class="relative w-16 h-16 flex-center">
+        <div class="absolute inset-0 rounded-full border-4 border-amber-100 border-t-orange-600 animate-spin"></div>
+        <div class="w-10 h-10 rounded-full bg-orange-50 text-orange-600 flex-center shadow-inner">
+          <ion-icon name="card-outline" class="text-xl animate-pulse"></ion-icon>
+        </div>
+      </div>
+
+      <div class="space-y-1.5">
+        <h3 class="font-black text-stone-900 text-sm">Membuka Pembayaran</h3>
+        <p class="text-xs text-orange-600 font-bold animate-pulse">Menghubungkan ke Midtrans...</p>
+        <p class="text-[10px] text-stone-400 pt-1 leading-relaxed">
+          Mohon tunggu sebentar sampai jendela pembayaran Midtrans disiapkan.
+        </p>
+      </div>
+
+      <div class="w-full bg-amber-100 h-1.5 rounded-full overflow-hidden">
+        <div class="bg-orange-600 h-full rounded-full w-2/3 animate-pulse"></div>
+      </div>
+    </div>
+  </div>
+</ion-content>

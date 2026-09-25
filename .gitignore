@@ -1,0 +1,54 @@
+# Specifies intentionally untracked files to ignore when using Git
+# http://git-scm.com/docs/gitignore
+
+# Environment & Secret files
+.env
+.env.*
+*.env
+src/environments/environment.ts
+src/environments/environment.prod.ts
+src/environments/environment.development.ts
+
+# Node & Dependencies
+/node_modules
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Angular & Build Outputs
+/.angular
+/.angular/cache
+/dist
+/www
+/tmp
+/out-tsc
+
+# Ionic
+/.ionic
+/platforms
+/plugins
+
+# Android Native Build Outputss
+/android/.gradle
+/android/build
+/android/app/build
+/android/app/build/
+/android/app/src/main/assets/public
+/android/app/src/main/assets/capacitor.config.json
+/android/local.properties
+/android/.idea
+
+# IDEs & Editors
+.idea/
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+*.sublime-project
+*.sublime-workspace
+
+# System Files & Logs
+.DS_Store
+Thumbs.db
+*.log

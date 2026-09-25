@@ -1,0 +1,10 @@
+{
+  "/midtrans-api": {
+    "target": "https://app.sandbox.midtrans.com",
+    "secure": false,
+    "changeOrigin": true,
+    "pathRewrite": {
+      "^/midtrans-api": ""
+    }
+  }
+}

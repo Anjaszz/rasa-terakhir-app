@@ -1,0 +1,262 @@
+<ion-header class="ion-no-border">
+  <div class="bg-white/95 backdrop-blur-md border-b border-amber-200/60 px-4 header-safe-top pb-3 shadow-sm">
+    <!-- Top Bar: Brand Logo & Customer Greeting -->
+    <div class="flex items-center justify-between mb-3">
+      <div class="flex items-center gap-2.5">
+        <img src="assets/logo-rasaterakhir.png" alt="Rasa Terakhir Logo" class="h-11 w-auto object-contain drop-shadow-sm">
+        <div>
+          <div class="flex items-center gap-1 text-orange-600 font-black text-[10px] uppercase tracking-wider">
+            <ion-icon name="sparkles" class="text-xs"></ion-icon>
+            <span>Rasa Terakhir</span>
+          </div>
+          <h1 class="text-sm font-extrabold text-stone-900 leading-tight">
+            {{ authService.currentUser?.name ? 'Hai, ' + authService.currentUser?.name : 'Toko Dimsum & Kuliner Premium' }}
+          </h1>
+        </div>
+      </div>
+      <a routerLink="/cart" class="relative w-10 h-10 rounded-2xl bg-orange-50 text-orange-600 flex-center border border-orange-200/60 shadow-sm active:scale-95 transition-all">
+        <ion-icon name="cart-outline" class="text-xl"></ion-icon>
+        <span *ngIf="orderService.cartCount > 0" class="absolute -top-1.5 -right-1.5 min-w-[20px] h-[20px] px-1 bg-orange-600 text-white text-[10px] font-black rounded-full flex-center shadow-md shadow-orange-600/40 animate-pulse">
+          {{ orderService.cartCount > 99 ? '99+' : orderService.cartCount }}
+        </span>
+      </a>
+    </div>
+
+    <!-- Search Bar -->
+    <div class="relative">
+      <ion-icon name="search-outline" class="absolute left-3.5 top-1/2 -translate-y-1/2 text-stone-400 text-lg"></ion-icon>
+      <input 
+        type="text" 
+        [(ngModel)]="searchQuery" 
+        (ngModelChange)="applyFilter()"
+        placeholder="Cari dimsum, bakso bakar, & menu favorit..." 
+        class="w-full bg-amber-50/70 border border-amber-200/80 text-xs py-2.5 pl-10 pr-4 rounded-xl text-stone-800 placeholder-stone-400 focus:outline-none focus:ring-2 focus:ring-orange-500/20 focus:border-orange-500 focus:bg-white transition-all">
+    </div>
+
+    <!-- Categories Pills -->
+    <div class="flex items-center gap-2 overflow-x-auto no-scrollbar pt-3 pb-1">
+      <button 
+        *ngFor="let cat of categories"
+        (click)="selectedCategory = cat; applyFilter()"
+        class="flex-shrink-0 px-4 py-1.5 rounded-full text-xs font-bold transition-all whitespace-nowrap"
+        [ngClass]="selectedCategory === cat ? 'bg-gradient-to-r from-orange-600 to-amber-600 text-white shadow-md shadow-orange-500/25 scale-105' : 'bg-amber-100/70 text-stone-700 hover:bg-amber-200/80'">
+        {{ cat === 'Semua' ? 'Semua Menu' : cat }}
+      </button>
+    </div>
+  </div>
+</ion-header>
+
+<ion-content class="bg-[#FFF9F2]">
+  <div class="p-4 space-y-4 pb-36 max-w-md mx-auto">
+    <!-- Banner Promo / Tagline -->
+    <div class="rounded-2xl p-4 bg-gradient-to-r from-[#703310] via-[#E55B13] to-[#F9A03F] text-white shadow-lg shadow-orange-900/15 relative overflow-hidden">
+      <div class="relative z-10">
+        <span class="bg-white/20 text-white text-[9px] font-extrabold px-2.5 py-0.5 rounded-full uppercase tracking-widest backdrop-blur-sm">Cikande Serang</span>
+        <h2 class="text-base font-black mt-1 leading-snug">Dimsum Premium &amp; Olahan Enak</h2>
+        <p class="text-[11px] text-amber-100 mt-0.5">Pesan online cepat, higienis &amp; langsung siap diolah!</p>
+      </div>
+      <div class="absolute -right-4 -bottom-6 w-28 h-28 bg-white/10 rounded-full blur-xl pointer-events-none"></div>
+    </div>
+
+    <!-- Loading Skeleton -->
+    <div *ngIf="isLoading" class="grid grid-cols-2 gap-3">
+      <div *ngFor="let i of [1,2,3,4,5,6]" class="bg-white rounded-2xl p-3 border border-amber-100 shadow-sm animate-pulse space-y-2">
+        <div class="w-full h-28 bg-amber-100/60 rounded-xl"></div>
+        <div class="h-3 bg-amber-100/60 rounded w-3/4"></div>
+        <div class="h-3 bg-amber-100/60 rounded w-1/2"></div>
+      </div>
+    </div>
+
+    <!-- Empty State -->
+    <div *ngIf="!isLoading && filteredProducts.length === 0" class="text-center py-16 space-y-3">
+      <div class="w-16 h-16 bg-amber-100/60 rounded-full flex-center mx-auto text-orange-500">
+        <ion-icon name="search-outline" class="text-3xl"></ion-icon>
+      </div>
+      <p class="font-bold text-stone-700 text-sm">Tidak ada menu yang ditemukan</p>
+      <p class="text-xs text-stone-400">Coba ganti kata kunci pencarian Anda</p>
+    </div>
+
+    <!-- Product Grid -->
+    <div *ngIf="!isLoading && filteredProducts.length > 0" class="grid grid-cols-2 gap-3">
+      <div 
+        *ngFor="let product of filteredProducts" 
+        (click)="product.virtualStock > 0 ? openCustomizeModal(product) : null"
+        class="bg-white rounded-2xl p-3 border border-amber-200/50 shadow-sm hover:shadow-md hover:border-orange-300 active:scale-95 transition-all flex flex-col justify-between group"
+        [ngClass]="product.virtualStock > 0 ? 'cursor-pointer' : 'opacity-60 cursor-not-allowed'">
+        
+        <!-- Photo -->
+        <div class="relative w-full h-32 bg-amber-50 rounded-xl overflow-hidden mb-2.5 flex-center border border-amber-100/60">
+          <img 
+            *ngIf="product.photo" 
+            [src]="product.photo" 
+            [alt]="product.name" 
+            class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
+          <div *ngIf="!product.photo" class="text-orange-300 flex flex-col items-center">
+            <ion-icon name="restaurant-outline" class="text-3xl"></ion-icon>
+          </div>
+
+          <!-- Stock Pill Badge -->
+          <div class="absolute bottom-2 left-2">
+            <span *ngIf="product.virtualStock > 0" class="text-[9px] font-extrabold text-stone-800 bg-white/95 backdrop-blur-sm px-2 py-0.5 rounded-full shadow-sm border border-amber-200">
+              Stok {{ product.virtualStock }}
+            </span>
+            <span *ngIf="product.virtualStock <= 0" class="text-[9px] font-black uppercase text-rose-600 bg-rose-50 border border-rose-200 px-2 py-0.5 rounded-full shadow-sm">
+              Habis
+            </span>
+          </div>
+        </div>
+
+        <!-- Info -->
+        <div>
+          <h3 class="font-bold text-stone-800 text-xs line-clamp-2 leading-snug group-hover:text-orange-600 transition-colors">{{ product.name }}</h3>
+          <p *ngIf="product.variant" class="text-[10px] font-medium text-stone-400 mt-0.5">{{ product.variant }}</p>
+        </div>
+
+        <!-- Price & Action -->
+        <div class="flex items-center justify-between mt-3 pt-2 border-t border-amber-100/60">
+          <div>
+            <span class="text-xs font-black text-orange-600">{{ formatRupiah(product.price) }}</span>
+          </div>
+          <button 
+            [disabled]="product.virtualStock <= 0"
+            class="w-7 h-7 rounded-xl bg-orange-50 hover:bg-orange-600 hover:text-white text-orange-600 flex-center transition-all disabled:bg-stone-100 disabled:text-stone-300 shadow-sm">
+            <ion-icon name="add" class="text-base font-bold"></ion-icon>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Customization Modal -->
+  <ion-modal [isOpen]="isModalOpen" (didDismiss)="closeModal()" class="custom-sheet-modal">
+    <ng-template>
+      <div *ngIf="selectedProduct" class="bg-white flex flex-col max-h-[90vh] rounded-t-3xl overflow-hidden font-['Outfit',sans-serif]">
+        <!-- Modal Header -->
+        <div class="p-4 bg-gradient-to-r from-[#703310] via-[#E55B13] to-[#F9A03F] text-white flex items-center justify-between shadow-md">
+          <div>
+            <h2 class="font-bold text-sm text-white">{{ selectedProduct.name }}</h2>
+            <div class="flex items-center gap-2 mt-0.5">
+              <span class="text-xs font-extrabold text-amber-200">{{ formatRupiah(selectedProduct.price) }}</span>
+              <span class="text-[9px] font-extrabold px-2.5 py-0.5 rounded-full bg-white/20 text-white backdrop-blur-sm">
+                {{ currentModalMaxStock > 0 ? 'Tersedia: ' + currentModalMaxStock : 'Stok Habis' }}
+              </span>
+            </div>
+          </div>
+          <button (click)="closeModal()" class="text-white/80 hover:text-white text-2xl transition-colors">
+            <ion-icon name="close-circle"></ion-icon>
+          </button>
+        </div>
+
+        <!-- Modal Content Body -->
+        <div class="p-4 space-y-4 overflow-y-auto flex-1 bg-[#FFF9F2]">
+          <!-- Variants -->
+          <div *ngIf="selectedProduct.variants && selectedProduct.variants.length > 0">
+            <label class="block text-xs font-bold text-stone-700 uppercase tracking-wider mb-2">Pilih Varian / Ukuran</label>
+            <div class="grid grid-cols-2 gap-2">
+              <button 
+                *ngFor="let v of selectedProduct.variants"
+                (click)="selectVariant(v)"
+                class="p-2.5 rounded-xl border text-left transition-all text-xs"
+                [ngClass]="selectedVariant?.name === v.name ? 'border-orange-500 bg-orange-50 text-orange-950 font-bold shadow-sm' : 'border-amber-200/80 bg-white text-stone-600'">
+                <div class="flex justify-between items-center">
+                  <span>{{ v.name }}</span>
+                  <span class="text-[10px] font-black text-orange-600">{{ formatRupiah(v.price) }}</span>
+                </div>
+                <span class="text-[9px] text-stone-400 block mt-0.5">Stok: {{ getVariantStock(selectedProduct, v) }}</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Toppings / Extra -->
+          <div *ngIf="selectedProduct.toppings && selectedProduct.toppings.length > 0">
+            <label class="block text-xs font-bold text-stone-700 uppercase tracking-wider mb-2">Tambah Topping / Extra</label>
+            <div class="space-y-2">
+              <button 
+                *ngFor="let t of selectedProduct.toppings"
+                (click)="toggleTopping(t)"
+                class="w-full p-2.5 rounded-xl border flex items-center justify-between text-xs transition-all"
+                [ngClass]="isToppingSelected(t) ? 'border-orange-500 bg-orange-50 text-orange-950 font-bold shadow-sm' : 'border-amber-200/80 bg-white text-stone-600'">
+                <div class="flex items-center gap-2">
+                  <ion-icon [name]="isToppingSelected(t) ? 'checkmark-circle' : 'add'" [class.text-orange-600]="isToppingSelected(t)"></ion-icon>
+                  <span>{{ t.name }}</span>
+                </div>
+                <span class="text-xs font-black text-orange-600">+{{ formatRupiah(t.price) }}</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Catatan Khusus (Special Notes) -->
+          <div>
+            <label class="block text-xs font-bold text-stone-700 uppercase tracking-wider mb-1.5">Catatan Pesanan</label>
+            <input 
+              type="text" 
+              [(ngModel)]="modalNotes" 
+              placeholder="Contoh: Sambal dipisah, ekstra saus, pedas sedang, dll." 
+              class="w-full p-2.5 bg-white border border-amber-200/80 rounded-xl text-xs focus:outline-none focus:border-orange-500 focus:ring-2 focus:ring-orange-500/20">
+          </div>
+
+          <!-- Quantity Stepper -->
+          <div class="flex items-center justify-between pt-2">
+            <div>
+              <span class="text-xs font-bold text-stone-800 block">Jumlah Pesanan</span>
+              <span class="text-[10px] text-stone-400">Maksimal: {{ currentModalMaxStock }}</span>
+            </div>
+            <div class="flex items-center gap-3 bg-amber-100/60 p-1.5 rounded-2xl border border-amber-200/60">
+              <button 
+                [disabled]="modalQty <= 1"
+                (click)="modalQty = modalQty > 1 ? modalQty - 1 : 1" 
+                class="w-8 h-8 rounded-xl bg-white shadow-sm flex-center text-stone-700 font-bold disabled:opacity-40 active:scale-95">
+                <ion-icon name="remove"></ion-icon>
+              </button>
+              <span class="font-black text-sm text-stone-900 w-5 text-center">{{ modalQty }}</span>
+              <button 
+                [disabled]="modalQty >= currentModalMaxStock"
+                (click)="modalQty = modalQty < currentModalMaxStock ? modalQty + 1 : modalQty" 
+                class="w-8 h-8 rounded-xl bg-white shadow-sm flex-center text-stone-700 font-bold disabled:opacity-40 active:scale-95">
+                <ion-icon name="add"></ion-icon>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Modal Footer CTA -->
+        <div class="p-4 border-t border-amber-200/60 bg-white flex items-center justify-between cta-safe-bottom">
+          <div>
+            <p class="text-[10px] text-stone-400 font-bold uppercase tracking-wider">Total Harga</p>
+            <p class="text-lg font-black text-orange-600 leading-tight">{{ formatRupiah(calculatedModalPrice) }}</p>
+          </div>
+          <button 
+            [disabled]="currentModalMaxStock <= 0 || modalQty <= 0"
+            (click)="addToCartFromModal()" 
+            class="px-6 py-3 bg-gradient-to-r from-orange-600 to-amber-600 hover:from-orange-700 hover:to-amber-700 text-white font-bold text-xs rounded-2xl shadow-lg shadow-orange-600/30 transition-all flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed">
+            <span>{{ currentModalMaxStock > 0 ? 'Tambah ke Keranjang' : 'Stok Habis' }}</span>
+            <ion-icon name="arrow-forward"></ion-icon>
+          </button>
+        </div>
+      </div>
+    </ng-template>
+  </ion-modal>
+
+  <!-- Floating Cart Bar (Appears when cart has items) -->
+  <div 
+    *ngIf="(orderService.cartItems$ | async)?.length" 
+    class="fixed bottom-[calc(4.75rem+env(safe-area-inset-bottom,0px))] left-4 right-4 z-30 max-w-md mx-auto animate-in fade-in slide-in-from-bottom-4 duration-300">
+    <a 
+      routerLink="/cart" 
+      class="bg-gradient-to-r from-[#703310] via-[#E55B13] to-[#F9A03F] text-white p-3.5 rounded-2xl shadow-xl shadow-orange-950/25 flex items-center justify-between hover:opacity-95 transition-all border border-amber-300/30">
+      <div class="flex items-center gap-3">
+        <div class="w-9 h-9 rounded-xl bg-white/20 backdrop-blur-sm flex-center font-black text-sm">
+          {{ orderService.cartCount }}
+        </div>
+        <div>
+          <p class="text-[10px] text-amber-100 font-medium">Total Pesanan</p>
+          <p class="font-extrabold text-sm leading-tight text-white">{{ formatRupiah(orderService.cartSubtotal) }}</p>
+        </div>
+      </div>
+      <div class="flex items-center gap-1.5 font-bold text-xs bg-white text-orange-600 px-3.5 py-2 rounded-xl shadow-sm">
+        <span>Lihat Keranjang</span>
+        <ion-icon name="arrow-forward"></ion-icon>
+      </div>
+    </a>
+  </div>
+</ion-content>
