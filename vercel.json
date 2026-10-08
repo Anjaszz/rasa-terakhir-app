@@ -1,0 +1,9 @@
+{
+  "outputDirectory": "www",
+  "rewrites": [
+    {
+      "source": "/(.*)",
+      "destination": "/index.html"
+    }
+  ]
+}

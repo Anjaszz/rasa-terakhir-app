@@ -28,7 +28,8 @@ yarn-error.log*
 /platforms
 /plugins
 
-# Android Native Build Outputss
+# Android Native Build Outputs
+
 /android/.gradle
 /android/build
 /android/app/build
