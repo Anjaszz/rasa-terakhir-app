@@ -34,7 +34,7 @@
     </div>
 
     <!-- Categories Pills -->
-    <div class="flex items-center gap-2 overflow-x-auto no-scrollbar pt-3 pb-1">
+    <div class="flex items-center gap-2 overflow-x-auto no-scrollbar pt-3 pb-1 px-2">
       <button 
         *ngFor="let cat of categories"
         (click)="selectedCategory = cat; applyFilter()"

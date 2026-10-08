@@ -19,7 +19,7 @@
 </ion-header>
 
 <ion-content class="bg-[#FFF9F2]">
-  <div class="p-4 space-y-4 pb-36 max-w-lg mx-auto font-['Outfit',sans-serif]">
+  <div class="p-4 space-y-4 pb-[calc(11rem+env(safe-area-inset-bottom,0px))] max-w-lg mx-auto font-['Outfit',sans-serif]">
     
     <!-- Empty Cart -->
     <div *ngIf="orderService.cart.length === 0" class="text-center py-20 space-y-4">
@@ -277,8 +277,8 @@
     </div>
   </div>
 
-  <!-- Bottom CTA -->
-  <div *ngIf="orderService.cart.length > 0" class="fixed bottom-0 left-0 right-0 px-4 pt-3 cta-safe-bottom bg-white/95 backdrop-blur-md border-t border-amber-200/60 z-30 font-['Outfit',sans-serif]">
+  <!-- Bottom CTA Bar (Placed above bottom navbar, z-40) -->
+  <div *ngIf="orderService.cart.length > 0" class="fixed bottom-[calc(5rem+env(safe-area-inset-bottom,0px))] left-0 right-0 px-4 py-3 bg-white/95 backdrop-blur-md border-t border-amber-200/80 z-40 shadow-lg shadow-orange-950/10 font-['Outfit',sans-serif]">
     <div class="max-w-lg mx-auto flex items-center justify-between gap-4">
       <div>
         <p class="text-[10px] text-stone-400 uppercase font-bold">Total Pembayaran</p>
@@ -288,7 +288,7 @@
       <button 
         (click)="submitOrder()" 
         [disabled]="isSubmitting"
-        class="flex-1 py-3.5 px-6 bg-gradient-to-r from-orange-600 to-amber-600 hover:from-orange-700 hover:to-amber-700 text-white font-extrabold text-xs rounded-2xl shadow-lg shadow-orange-600/30 flex-center gap-2 transition-all disabled:opacity-50">
+        class="flex-1 py-3.5 px-6 bg-gradient-to-r from-orange-600 to-amber-600 hover:from-orange-700 hover:to-amber-700 active:scale-95 text-white font-extrabold text-xs rounded-2xl shadow-lg shadow-orange-600/30 flex-center gap-2 transition-all disabled:opacity-50">
         <span *ngIf="!isSubmitting">Buat Pesanan Sekarang</span>
         <span *ngIf="isSubmitting" class="animate-pulse">Memproses Pesanan...</span>
       </button>
