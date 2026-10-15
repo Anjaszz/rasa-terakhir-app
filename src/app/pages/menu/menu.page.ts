@@ -5,9 +5,9 @@ import { RouterModule } from '@angular/router';
 import { IonContent, IonHeader, IonIcon, IonModal } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
 import { 
-  searchOutline, closeCircle, add, remove, sparkles, 
+  searchOutline, closeCircle, close, restaurantOutline, add, remove, sparkles, 
   arrowForward, storefrontOutline, bagHandleOutline, checkmarkCircle,
-  cartOutline, cart
+  cartOutline, cart, informationCircleOutline
 } from 'ionicons/icons';
 import { OrderService, CartItem } from '../../services/order.service';
 import { CustomerAuthService } from '../../services/customer-auth.service';
@@ -43,9 +43,9 @@ export class MenuPage implements OnInit, OnDestroy {
 
   constructor() {
     addIcons({ 
-      searchOutline, closeCircle, add, remove, sparkles, 
+      searchOutline, closeCircle, close, restaurantOutline, add, remove, sparkles, 
       arrowForward, storefrontOutline, bagHandleOutline, checkmarkCircle,
-      cartOutline, cart
+      cartOutline, cart, informationCircleOutline
     });
   }
 

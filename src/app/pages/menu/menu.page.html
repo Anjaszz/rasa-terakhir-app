@@ -131,24 +131,56 @@
   <ion-modal [isOpen]="isModalOpen" (didDismiss)="closeModal()" class="custom-sheet-modal">
     <ng-template>
       <div *ngIf="selectedProduct" class="bg-white flex flex-col max-h-[90vh] rounded-t-3xl overflow-hidden font-['Outfit',sans-serif]">
-        <!-- Modal Header -->
-        <div class="p-4 bg-gradient-to-r from-[#703310] via-[#E55B13] to-[#F9A03F] text-white flex items-center justify-between shadow-md">
-          <div>
-            <h2 class="font-bold text-sm text-white">{{ selectedProduct.name }}</h2>
-            <div class="flex items-center gap-2 mt-0.5">
-              <span class="text-xs font-extrabold text-amber-200">{{ formatRupiah(selectedProduct.price) }}</span>
-              <span class="text-[9px] font-extrabold px-2.5 py-0.5 rounded-full bg-white/20 text-white backdrop-blur-sm">
-                {{ currentModalMaxStock > 0 ? 'Tersedia: ' + currentModalMaxStock : 'Stok Habis' }}
+        <!-- Product Hero Image Banner Header -->
+        <div class="relative w-full h-48 sm:h-56 bg-amber-100/70 overflow-hidden flex-shrink-0">
+          <!-- Image -->
+          <img 
+            *ngIf="selectedProduct.photo" 
+            [src]="selectedProduct.photo" 
+            [alt]="selectedProduct.name" 
+            class="w-full h-full object-cover">
+          <div *ngIf="!selectedProduct.photo" class="w-full h-full flex flex-col items-center justify-center bg-gradient-to-br from-[#703310] via-[#E55B13] to-[#F9A03F] text-amber-100">
+            <ion-icon name="restaurant-outline" class="text-5xl mb-1 text-white/80"></ion-icon>
+            <span class="text-xs font-bold text-white/90">Rasa Terakhir</span>
+          </div>
+
+          <!-- Bottom Gradient Vignette for Text Contrast -->
+          <div class="absolute inset-0 bg-gradient-to-t from-stone-950/85 via-stone-950/30 to-transparent pointer-events-none"></div>
+
+          <!-- Top Floating Actions -->
+          <div class="absolute top-3 left-3 right-3 flex items-center justify-between z-10">
+
+            <!-- Close Button -->
+            <button 
+              (click)="closeModal()" 
+              class="w-8 h-8 rounded-full bg-black/50 hover:bg-black/70 text-white flex-center backdrop-blur-md transition-all shadow-md active:scale-95 border border-white/20">
+              <ion-icon name="close" class="text-lg font-bold"></ion-icon>
+            </button>
+          </div>
+
+          <!-- Bottom Overlay: Name, Price, and Stock -->
+          <div class="absolute bottom-3 left-3 right-3 z-10 text-white">
+            <h2 class="font-black text-base sm:text-lg text-white drop-shadow-md leading-tight">{{ selectedProduct.name }}</h2>
+            <div class="flex items-center gap-2 mt-1">
+              <span class="text-sm font-black text-amber-300 drop-shadow-sm">{{ formatRupiah(selectedProduct.price) }}</span>
+              <span *ngIf="currentModalMaxStock > 0" class="text-[10px] font-extrabold px-2.5 py-0.5 rounded-full bg-white/25 text-white backdrop-blur-md border border-white/20">
+                Tersedia: {{ currentModalMaxStock }}
+              </span>
+              <span *ngIf="currentModalMaxStock <= 0" class="text-[10px] font-black uppercase px-2.5 py-0.5 rounded-full bg-rose-500/90 text-white backdrop-blur-md">
+                Stok Habis
               </span>
             </div>
           </div>
-          <button (click)="closeModal()" class="text-white/80 hover:text-white text-2xl transition-colors">
-            <ion-icon name="close-circle"></ion-icon>
-          </button>
         </div>
 
         <!-- Modal Content Body -->
         <div class="p-4 space-y-4 overflow-y-auto flex-1 bg-[#FFF9F2]">
+          <!-- Product Description (Tampil otomatis jika diisi dari Aplikasi Kasir) -->
+          <div *ngIf="selectedProduct.description" class="bg-amber-100/50 p-3 rounded-2xl border border-amber-200/60 flex items-start gap-2.5">
+            <ion-icon name="information-circle-outline" class="text-orange-600 text-lg mt-0.5 flex-shrink-0"></ion-icon>
+            <p class="text-xs text-stone-700 leading-relaxed font-medium">{{ selectedProduct.description }}</p>
+          </div>
+
           <!-- Variants -->
           <div *ngIf="selectedProduct.variants && selectedProduct.variants.length > 0">
             <label class="block text-xs font-bold text-stone-700 uppercase tracking-wider mb-2">Pilih Varian / Ukuran</label>
